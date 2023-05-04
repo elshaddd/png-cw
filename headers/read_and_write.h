@@ -1,7 +1,3 @@
-//#ifndef TEST_READ_AND_WRITE_H
-//#define TEST_READ_AND_WRITE_H
-//
-//#endif //TEST_READ_AND_WRITE_H
 #pragma once
 
 #include "libs_and_strucs.h"

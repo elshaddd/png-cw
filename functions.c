@@ -1,14 +1,34 @@
 #include "functions.h"
 
+void printHelp() {
+    printf("\nPossibly options:\n");
+    printf("--draw - Drawing a square. A square is defined:\n");
+    printf("--start (<start coordinates>) - The coordinates of the upper left corner;\n");
+    printf("--size <value> - The size of the side;\n");
+    printf("--line <value> - The thickness of the lines;\n");
+    printf("--outline (<color values>) - The color of the lines;\n");
+    printf("--fill (<color values>) - Filled color (optional).\n");
+    printf("--swap (<start coordinates>)(<end coordinates>) - Swap four pieces of the target area. Swap is defined:\n");
+    printf("--mode <value> - The method of swaping pieces: \"in a circle\" - <1>, \"diagonally\" - <2>.\n");
+    printf("--change (<color values>) - The most common color is replaced by another.\n");
+    printf("--inversion (<start coordinates>)(<end coordinates>) - Color inversion in the target area.\n");
+    printf("\nThe last two options are the names of PNG files for reading and writing.\n\n");
+    printf("Examples of use:\n"
+           "--draw --start (0,0) --size 100 --line 4 --outline (255,0,0) --fill (0,255,0) test.png test_res.png\n"
+           "--swap (10,20)(100,200) --mode 2 test.png test_res.png\n"
+           "--change (0,128,128) test.png test_res.png\n"
+           "--inversion (0,0)(700,700) test.png test_res.png\n");
+}
 
-void draw_square(struct Png *image, int x0, int y0, int size, int line_width, png_color line_color, int is_filled,
+
+void draw_square(struct Png *image, int x0, int y0, int size, int line_width, png_color line_color, int is_fill,
                  png_color fill_color) {
     if (((size - x0) > image->width) || ((size - y0) > image->height)) {
         printf("the coordinates do not match the size of the image\n");
         return;
     }
 
-    if((line_width * 2 > image->height) || (line_width * 2 > image->width)){
+    if ((line_width * 2 > image->height) || (line_width * 2 > image->width)) {
         printf("line width is too big");
         return;
     }
@@ -61,7 +81,7 @@ void draw_square(struct Png *image, int x0, int y0, int size, int line_width, pn
         }
     }
 // Fill square if requested
-    if (is_filled) {
+    if (is_fill) {
         for (int i = y0 + line_width; i <= y1 - line_width; i++) {
             png_bytep row = image->row_pointers[i];
             for (int j = x0 + line_width; j <= x1 - line_width; j++) {
@@ -99,24 +119,26 @@ void swap_pix(struct Png *image, int mode, int x0, int y0, int x1, int y1) {
         printf("color_type of input file must be PNG_COLOR_TYPE_RGBA");
         return;// Some error handling: color_type of input file must be PNG_COLOR_TYPE_RGBA
     }
+    // Median
     int h_med = (x1 - x0) / 2;
     int v_med = (y1 - y0) / 2;
 
-//    int h_med = (image->width) / 2;
-//    int v_med = (image->height) / 2;
     for (int i = y0; i < v_med; i++) {
         png_bytep row1 = image->row_pointers[i];
         png_bytep row2 = image->row_pointers[v_med + i];
         for (int j = x0; j < h_med; j++) {
+            // Partitioning the four parts of the image into pointers
             png_bytep ptr_1 = &(row1[j * 4]);
             png_bytep ptr_2 = &(row1[(h_med + j) * 4]);
             png_bytep ptr_3 = &(row2[(h_med + j) * 4]);
             png_bytep ptr_4 = &(row2[j * 4]);
             if (mode == 1) {
+                // Round swapping
                 swapArrays(ptr_1, ptr_2);
                 swapArrays(ptr_1, ptr_3);
                 swapArrays(ptr_1, ptr_4);
             } else if (mode == 2) {
+                // Diagonal swapping
                 swapArrays(ptr_1, ptr_3);
                 swapArrays(ptr_2, ptr_4);
             } else {
@@ -130,7 +152,7 @@ void swap_pix(struct Png *image, int mode, int x0, int y0, int x1, int y1) {
 
 void change_color(struct Png *image, png_color color) {
     int arr_size = (image->width) * (image->height);
-    // массив для хранения всех цветов пикселей png_colorc
+    // Array to store all pixel colors png_colorc
     png_colorc *arr = malloc(arr_size * sizeof(png_colorc));
     int c = 0;
     for (int i = 0; i < image->height; i++) {
@@ -138,7 +160,7 @@ void change_color(struct Png *image, png_color color) {
         for (int j = 0; j < image->width; j++) {
             int fl = 0;
             png_bytep ptr = &(row[j * 4]);
-            // в массив добавляются только новые цвета, и у каждого цвета при повторе увеличивается счетчик
+            // Only new colors are added to the array, and each color's counter is incremented when repeating
             for (int k = 0; k < c; k++) {
                 if ((ptr[0] == arr[k].red) && (ptr[1] == arr[k].green) && (ptr[2] == arr[k].blue)) {
                     arr[k].amount += 1;
@@ -154,8 +176,7 @@ void change_color(struct Png *image, png_color color) {
             }
         }
     }
-
-// поиск цвета в массиве с самым большим счетчиком
+// Searching for a color in the array with the largest counter
     int max = 0;
     png_colorc color_need_to_change;
     for (int i = 0; i < c; i++) {
@@ -166,8 +187,7 @@ void change_color(struct Png *image, png_color color) {
             color_need_to_change.blue = arr[i].blue;
         }
     }
-
-// замена цвета
+// Color change
     for (int i = 0; i < image->height; i++) {
         png_bytep row = image->row_pointers[i];
         for (int j = 0; j < image->width; j++) {
@@ -184,7 +204,7 @@ void change_color(struct Png *image, png_color color) {
 }
 
 
-void negative(struct Png *image, int x0, int y0, int x1, int y1) {
+void inversion(struct Png *image, int x0, int y0, int x1, int y1) {
     if (((x1 - x0) > image->width) || ((y1 - y0) > image->height)) {
         printf("the coordinates do not match the size of the image\n");
         return;
@@ -202,6 +222,7 @@ void negative(struct Png *image, int x0, int y0, int x1, int y1) {
         png_bytep row = image->row_pointers[i];
         for (int j = x0; j < x1; j++) {
             png_bytep ptr = &(row[j * 4]);
+            // Color inversion: 255 - <value>
             ptr[0] = 255 - ptr[0];
             ptr[1] = 255 - ptr[1];
             ptr[2] = 255 - ptr[2];

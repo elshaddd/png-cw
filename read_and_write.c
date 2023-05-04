@@ -8,13 +8,13 @@ int read_png_file(char *file_name, struct Png *image) {
     /* open file and test for it being a png */
     FILE *fp = fopen(file_name, "rb");
     if (!fp) {
-        printf("[read_png_file] File %s could not be opened for reading\n", file_name);
+        printf("File %s could not be opened for reading\n", file_name);
         return 1;
     }
 
     fread(header, 1, 8, fp);
     if (png_sig_cmp(header, 0, 8)) {
-        printf("[read_png_file] File %s is not recognized as a PNG file\n", file_name);
+        printf("File %s is not recognized as a PNG file\n", file_name);
         return 1;
     }
 
@@ -22,18 +22,18 @@ int read_png_file(char *file_name, struct Png *image) {
     image->png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 
     if (!image->png_ptr) {
-        printf("[read_png_file] png_create_read_struct failed\n");
+        printf("png_create_read_struct failed\n");
         return 1;
     }
 
     image->info_ptr = png_create_info_struct(image->png_ptr);
     if (!image->info_ptr) {
-        printf("[read_png_file] png_create_info_struct failed\n");
+        printf("png_create_info_struct failed\n");
         return 1;
     }
 
     if (setjmp(png_jmpbuf(image->png_ptr))) {
-        printf("[read_png_file] Error during init_io\n");
+        printf("Error during init_io\n");
         png_destroy_read_struct(&image->png_ptr, &image->info_ptr, NULL);
         return 1;
     }
@@ -48,8 +48,8 @@ int read_png_file(char *file_name, struct Png *image) {
     image->color_type = png_get_color_type(image->png_ptr, image->info_ptr);
     image->bit_depth = png_get_bit_depth(image->png_ptr, image->info_ptr);
 
-//    if (image->color_type == PNG_COLOR_TYPE_PALETTE)
-//        png_set_palette_to_rgb(image->png_ptr);
+    if (image->color_type == PNG_COLOR_TYPE_PALETTE)
+        png_set_palette_to_rgb(image->png_ptr);
 
     if (image->color_type == PNG_COLOR_TYPE_RGB || image->color_type == PNG_COLOR_TYPE_RGB_ALPHA)
         png_set_add_alpha(image->png_ptr, 0xFF, PNG_FILLER_AFTER);
@@ -73,7 +73,7 @@ int read_png_file(char *file_name, struct Png *image) {
 
     /* read file */
     if (setjmp(png_jmpbuf(image->png_ptr))) {
-        printf("[read_png_file] Error during read_image\n");
+        printf("Error during read_image\n");
         return 1;
     }
 
@@ -91,7 +91,7 @@ int read_png_file(char *file_name, struct Png *image) {
 int write_png_file(char *file_name, struct Png *image) {
     FILE *fp = fopen(file_name, "wb");
     if (!fp) {
-        printf("[write_png_file] File %s could not be opened for writing\n", file_name);
+        printf("File %s could not be opened for writing\n", file_name);
         return 1;
     }
 
@@ -99,18 +99,18 @@ int write_png_file(char *file_name, struct Png *image) {
     image->png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 
     if (!image->png_ptr) {
-        printf("[write_png_file] png_create_write_struct failed\n");
+        printf("png_create_write_struct failed\n");
         return 1;
     }
 
     image->info_ptr = png_create_info_struct(image->png_ptr);
     if (!image->info_ptr) {
-        printf("[write_png_file] png_create_info_struct failed\n");
+        printf("png_create_info_struct failed\n");
         return 1;
     }
 
     if (setjmp(png_jmpbuf(image->png_ptr))) {
-        printf("[write_png_file] Error during init_io\n");
+        printf("Error during init_io\n");
         return 1;
     }
 
@@ -118,7 +118,7 @@ int write_png_file(char *file_name, struct Png *image) {
 
     /* write header */
     if (setjmp(png_jmpbuf(image->png_ptr))) {
-        printf("[write_png_file] Error during writing header\n");
+        printf("Error during writing header\n");
         return 1;
     }
 
@@ -130,7 +130,7 @@ int write_png_file(char *file_name, struct Png *image) {
 
     /* write bytes */
     if (setjmp(png_jmpbuf(image->png_ptr))) {
-        printf("[write_png_file] Error during writing bytes\n");
+        printf("Error during writing bytes\n");
         return 1;
     }
 
@@ -138,7 +138,7 @@ int write_png_file(char *file_name, struct Png *image) {
 
     /* end write */
     if (setjmp(png_jmpbuf(image->png_ptr))) {
-        printf("[write_png_file] Error during end of write\n");
+        printf("Error during end of write\n");
         return 1;
     }
 
