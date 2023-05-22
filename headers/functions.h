@@ -16,3 +16,13 @@ void inversion(struct Png *image, int x0, int y0, int x1, int y1);
 void change_color(struct Png *image, png_color color);
 
 void black_white(struct Png *image, int x0, int y0, int x1, int y1);
+
+void vert_concat(struct Png *png1, struct Png *png2, struct Png *result);
+
+void add_borders(struct Png *image, int border_size, png_color color);
+
+void del_borders(struct Png *image, int border_size);
+
+void square_with_point(struct Png *image, png_color color);
+
+void merge(struct Png* png1,struct Png* png2, struct Png* result);
