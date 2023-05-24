@@ -7,7 +7,8 @@
 #include <stdarg.h>
 #include <png.h>
 #include <string.h>
-
+#include <stdbool.h>
+#include <math.h>
 
 struct Png {
     int width, height;

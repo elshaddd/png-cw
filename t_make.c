@@ -54,7 +54,7 @@ int main(int argc, char *argv[]) {
                 }
 
             case 'w':
-                sscanf(optarg, "(%d,%d)(%d,%d)", &swap[0], &swap[1], &swap[2], &swap[3]);
+                sscanf(optarg, "%d,%d:%d,%d", &swap[0], &swap[1], &swap[2], &swap[3]);
                 f_swap += 1;
                 break;
             case 'm':
@@ -63,20 +63,20 @@ int main(int argc, char *argv[]) {
 
             case 'i':
                 f_inversion += 1;
-                sscanf(optarg, "(%d,%d)(%d,%d)", &inversion_coor[0], &inversion_coor[1], &inversion_coor[2],
+                sscanf(optarg, "%d,%d:%d,%d", &inversion_coor[0], &inversion_coor[1], &inversion_coor[2],
                        &inversion_coor[3]);
                 break;
 
             case 'c':
                 f_change += 1;
-                sscanf(optarg, "(%d,%d,%d)", &r, &g, &b);
+                sscanf(optarg, "%d,%d,%d", &r, &g, &b);
                 color.red = r;
                 color.green = g;
                 color.blue = b;
                 break;
 
             case 's':
-                sscanf(optarg, "(%d,%d)", &start[0], &start[1]);
+                sscanf(optarg, "%d,%d", &start[0], &start[1]);
                 break;
 
             case 'd':
@@ -88,14 +88,14 @@ int main(int argc, char *argv[]) {
                 break;
 
             case 'o':
-                sscanf(optarg, "(%d,%d,%d)", &r, &g, &b);
+                sscanf(optarg, "%d,%d,%d", &r, &g, &b);
                 outline.red = r;
                 outline.green = g;
                 outline.blue = b;
                 break;
 
             case 'f':
-                sscanf(optarg, "(%d,%d,%d)", &r, &g, &b);
+                sscanf(optarg, "%d,%d,%d", &r, &g, &b);
                 fill_color.red = r;
                 fill_color.green = g;
                 fill_color.blue = b;
@@ -107,7 +107,7 @@ int main(int argc, char *argv[]) {
                 break;
             }
             case 'v':
-                sscanf(optarg, "(%d,%d,%d)", &r, &g, &b);
+                sscanf(optarg, "%d,%d,%d", &r, &g, &b);
                 color1.red = r;
                 color1.green = g;
                 color1.blue = b;

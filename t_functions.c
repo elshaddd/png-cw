@@ -5,25 +5,25 @@ void printHelp() {
     printf("\nPossibly options:\n");
     printf("\nDrawing a square.\n");
     printf("--draw - Command to draw. A square is defined:\n");
-    printf("--start (<start coordinates>) - The coordinates of the upper left corner;\n");
+    printf("--start <start coordinates> - The coordinates of the upper left corner;\n");
     printf("--size <value> - The size of the side;\n");
     printf("--line <value> - The thickness of the lines;\n");
-    printf("--outline (<color values>) - The color of the lines;\n");
-    printf("--fill (<color values>) - Filled color (optional).\n");
+    printf("--outline <color values> - The color of the lines;\n");
+    printf("--fill <color values> - Filled color (optional).\n");
     printf("\nSwap four pieces of the target area.\n");
-    printf("--swap (<start coordinates>)(<end coordinates>) - Command to swap. Swap is defined:\n");
+    printf("--swap <start coordinates>:<end coordinates> - Command to swap. Swap is defined:\n");
     printf("--mode <value> - The method of swaping pieces: \"in a circle\" - <1>, \"diagonally\" - <2>.\n");
     printf("\nThe most common color is replaced by another.\n");
-    printf("--change (<color values>) - Command to change color.\n");
+    printf("--change <color values> - Command to change color.\n");
     printf("\nColor inversion in the target area.\n");
-    printf("--inversion (<start coordinates>)(<end coordinates>) - Command to inverse.\n");
+    printf("--inversion <start coordinates>:<end coordinates> - Command to inverse.\n");
     printf("\nThe last two options are the names of PNG files for reading and writing.\n");
     printf("Please be careful with the spaces and observe the option formats.\n\n");
     printf("Examples of use:\n"
-           "--draw --start (0,0) --size 100 --line 4 --outline (255,0,0) --fill (0,255,0) test.png test_res.png\n"
-           "--swap (10,20)(100,200) --mode 2 test.png test_res.png\n"
-           "--change (0,128,128) test.png test_res.png\n"
-           "--inversion (0,0)(700,700) test.png test_res.png\n");
+           "--draw --start 0,0 --size 100 --line 4 --outline 255,0,0 --fill 0,255,0 test.png test_res.png\n"
+           "--swap 10,20:100,200 --mode 2 test.png test_res.png\n"
+           "--change 0,128,128 test.png test_res.png\n"
+           "--inversion 0,0:700,700) test.png test_res.png\n");
 }
 
 
