@@ -88,19 +88,19 @@ void swap_pix(struct Png *image, int mode, int x0, int y0, int x1, int y1) {
         png_bytep row2 = image->row_pointers[v_med + i - y0];
         for (int j = x0; j < h_med; j++) {
             // Partitioning the four parts of the image into pointers
-            png_bytep ptr_1 = &(row1[j * 4]);
-            png_bytep ptr_2 = &(row1[(h_med + j - x0) * 4]);
-            png_bytep ptr_3 = &(row2[(h_med + j - x0) * 4]);
-            png_bytep ptr_4 = &(row2[j * 4]);
+            png_bytep ptr_1 = &(row1[j * image->channels]);
+            png_bytep ptr_2 = &(row1[(h_med + j - x0) * image->channels]);
+            png_bytep ptr_3 = &(row2[(h_med + j - x0) * image->channels]);
+            png_bytep ptr_4 = &(row2[j * image->channels]);
             if (mode == 1) {
                 // Round swapping
-                swap_arrays(ptr_1, ptr_2);
-                swap_arrays(ptr_1, ptr_3);
-                swap_arrays(ptr_1, ptr_4);
+                swap_arrays(ptr_1, ptr_2, image->channels);
+                swap_arrays(ptr_1, ptr_3, image->channels);
+                swap_arrays(ptr_1, ptr_4, image->channels);
             } else {
                 // Diagonal swapping
-                swap_arrays(ptr_1, ptr_3);
-                swap_arrays(ptr_2, ptr_4);
+                swap_arrays(ptr_1, ptr_3, image->channels);
+                swap_arrays(ptr_2, ptr_4, image->channels);
             }
         }
     }
@@ -116,7 +116,7 @@ void change_color(struct Png *image, png_color color) {
         png_bytep row = image->row_pointers[i];
         for (int j = 0; j < image->width; j++) {
             int fl = 0;
-            png_bytep ptr = &(row[j * 4]);
+            png_bytep ptr = &(row[j * image->channels]);
             // Only new colors are added to the array, and each color's counter is incremented when repeating
             for (int k = 0; k < c; k++) {
                 if ((ptr[0] == arr[k].red) && (ptr[1] == arr[k].green) && (ptr[2] == arr[k].blue)) {
@@ -148,7 +148,7 @@ void change_color(struct Png *image, png_color color) {
     for (int i = 0; i < image->height; i++) {
         png_bytep row = image->row_pointers[i];
         for (int j = 0; j < image->width; j++) {
-            png_bytep ptr = &(row[j * 4]);
+            png_bytep ptr = &(row[j * image->channels]);
             if (ptr[0] == color_need_to_change.red && ptr[1] == color_need_to_change.green &&
                 ptr[2] == color_need_to_change.blue) {
                 ptr[0] = color.red;
@@ -170,7 +170,7 @@ void inversion(struct Png *image, int x0, int y0, int x1, int y1) {
     for (int i = y0; i <= y1; i++) {
         png_bytep row = image->row_pointers[i];
         for (int j = x0; j <= x1; j++) {
-            png_bytep ptr = &(row[j * 4]);
+            png_bytep ptr = &(row[j * image->channels]);
             // Color inversion: 255 - <value>
             ptr[0] = 255 - ptr[0];
             ptr[1] = 255 - ptr[1];
@@ -180,8 +180,8 @@ void inversion(struct Png *image, int x0, int y0, int x1, int y1) {
 }
 
 
-void swap_arrays(png_byte *arr1, png_byte *arr2) {
-    for (int i = 0; i < 4; i++) {
+void swap_arrays(png_byte *arr1, png_byte *arr2, png_byte amount) {
+    for (int i = 0; i < amount; i++) {
         int temp = *(arr1 + i);
         *(arr1 + i) = *(arr2 + i);
         *(arr2 + i) = temp;
@@ -200,11 +200,14 @@ bool valid_coor(int x, int y, int height, int width) {
 void set_pixel_color(struct Png *img, int x, int y, png_color color) {
     if (valid_coor(x, y, img->height, img->width) == false)
         return;
-    png_bytep ptr = &(img->row_pointers[y][x * 4]);
+    int f_rgb = img->channels;
+    png_bytep ptr = &(img->row_pointers[y][x * img->channels]);
     ptr[0] = color.red;
     ptr[1] = color.green;
     ptr[2] = color.blue;
-    ptr[3] = 255;
+    if (f_rgb == 4) {
+        ptr[3] = 255;
+    }
 }
 
 
@@ -213,8 +216,10 @@ void set_pixel(struct Png *des, struct Png *src, int src_x, int src_y, int des_x
         return;
     if (valid_coor(des_x, des_y, src->height, src->width) == false)
         return;
-    for (int k = 0; k < 4; k++) {
-        des->row_pointers[des_y][des_x * 4 + k] = src->row_pointers[src_y][src_x * 4 + k];
+    int f_rgb = src->channels;
+
+    for (int k = 0; k < f_rgb; k++) {
+        des->row_pointers[des_y][des_x * des->channels + k] = src->row_pointers[src_y][src_x * src->channels + k];
     }
 }
 
@@ -226,7 +231,7 @@ void canvas(struct Png *image, png_byte color_type, png_byte bit_depth, int heig
     image->bit_depth = bit_depth;
     image->row_pointers = (png_bytep *) malloc(sizeof(png_bytep) * height);
     for (int i = 0; i < height; i++) {
-        image->row_pointers[i] = (png_byte *) malloc(sizeof(png_byte) * width * 4);
+        image->row_pointers[i] = (png_byte *) malloc(sizeof(png_byte) * width * image->channels);
     }
     // set all pix to white
     for (int i = 0; i < height; i++) {

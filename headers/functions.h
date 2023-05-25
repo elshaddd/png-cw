@@ -4,7 +4,7 @@
 
 void printHelp();
 
-void swap_arrays(png_byte *arr1, png_byte *arr2);
+void swap_arrays(png_byte *arr1, png_byte *arr2, png_byte amount);
 
 bool valid_coor(int x, int y, int height, int width);
 
