@@ -1,14 +1,12 @@
 #pragma once
 
-#include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <getopt.h>
-#include <stdarg.h>
 #include <png.h>
-#include <string.h>
 #include <stdbool.h>
-#include <math.h>
+#include <unistd.h>
+#include <string.h>
 
 struct Png {
     int width, height;
@@ -19,9 +17,9 @@ struct Png {
     png_bytep *row_pointers;
 };
 
-typedef struct png_color_struct_count {
+typedef struct png_color_struct_amount {
     png_byte red;
     png_byte green;
     png_byte blue;
     int amount;
-} png_colorc;
+} png_colora;
