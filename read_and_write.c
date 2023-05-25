@@ -1,7 +1,7 @@
 #include "read_and_write.h"
 
 int read_png_file(char *file_name, struct Png *image) {
-    char header[8];    // 8 is the maximum size that can be checked
+    unsigned char header[8];    // 8 is the maximum size that can be checked
     FILE *fp = fopen(file_name, "rb");
     if (!fp) {
         fprintf(stderr, "Error opening file %s\n", file_name);
@@ -37,12 +37,14 @@ int read_png_file(char *file_name, struct Png *image) {
     }
 
     png_init_io(image->png_ptr, fp);
+    png_set_sig_bytes(image->png_ptr, 8);
     png_read_info(image->png_ptr, image->info_ptr);
 
     image->width = png_get_image_width(image->png_ptr, image->info_ptr);
     image->height = png_get_image_height(image->png_ptr, image->info_ptr);
     image->color_type = png_get_color_type(image->png_ptr, image->info_ptr);
     image->bit_depth = png_get_bit_depth(image->png_ptr, image->info_ptr);
+    image->channels = png_get_channels(image->png_ptr, image->info_ptr);
 
     if (image->bit_depth == 16) {
         png_set_strip_16(image->png_ptr);
@@ -54,11 +56,6 @@ int read_png_file(char *file_name, struct Png *image) {
 
     if (png_get_valid(image->png_ptr, image->info_ptr, PNG_INFO_tRNS)) {
         png_set_tRNS_to_alpha(image->png_ptr);
-    }
-
-    if (image->color_type == PNG_COLOR_TYPE_RGB || image->color_type == PNG_COLOR_TYPE_GRAY ||
-        image->color_type == PNG_COLOR_TYPE_PALETTE) {
-        png_set_filler(image->png_ptr, 0xFF, PNG_FILLER_AFTER);
     }
 
     if (image->color_type == PNG_COLOR_TYPE_GRAY || image->color_type == PNG_COLOR_TYPE_GRAY_ALPHA) {
@@ -126,4 +123,3 @@ int write_png_file(char *file_name, struct Png *image) {
 
     fclose(fp);
 }
-

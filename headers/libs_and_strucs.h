@@ -15,6 +15,7 @@ struct Png {
     png_structp png_ptr;
     png_infop info_ptr;
     png_bytep *row_pointers;
+    png_byte channels;
 };
 
 typedef struct png_color_struct_amount {
